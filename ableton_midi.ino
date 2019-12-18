@@ -27,11 +27,11 @@ enum class State
 enum class BtnNum
 {
     STOP = 2,
-    PLAY,
-    REC,
-    LOOP,
-    RWD,
-    FFWD    
+    PLAY = 3,
+    REC  = 4,
+    LOOP = 5,
+    RWD  = 6,
+    FFWD = 7    
 };
 
 const BtnNum button_pins[] = {BtnNum::STOP, BtnNum::PLAY, BtnNum::REC, 
@@ -42,11 +42,11 @@ const BtnNum button_pins[] = {BtnNum::STOP, BtnNum::PLAY, BtnNum::REC,
 enum class CCNum
 {
     STOP = 0,
-    PLAY,
-    REC,
-    LOOP,
-    RWD,
-    FFWD            
+    PLAY = 1,
+    REC  = 2,
+    LOOP = 3,
+    RWD  = 4,
+    FFWD = 5           
 };
 
 const CCNum cc_numbers[] = {CCNum::STOP, CCNum::PLAY, CCNum::REC, 
