@@ -36,7 +36,7 @@ enum class BtnNum
 };
 
 const BtnNum button_pins[] = {BtnNum::STOP, BtnNum::PLAY, BtnNum::REC, 
-                              BtnNum::LOOP, BtnNum::RWD, BtnNum::FFWD}; 
+                              BtnNum::LOOP, BtnNum::RWD,  BtnNum::FFWD}; 
 
 
 /* Button cc message numbers  */
