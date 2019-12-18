@@ -1,4 +1,5 @@
 #include "dip_switch.h"
+#include "enums.h"
 
 /* MIDI command defines */
 #define NOTE_OFF      (uint16_t)0x80
@@ -100,21 +101,20 @@ void poll_buttons(void)
     {
         if(digitalRead((uint8_t)button_pins[btn]) == HIGH)
         {
-            update_state(btn);
+            update_state(button_pins[btn]);
             send_cc((uint8_t)cc_numbers[btn], 127, midi_channel);
             delay(250);
         }
     }
 }
 
-void update_state(uint8_t btn)
+void update_state(BtnNum btn)
 {
     prev_state = curr_state;
     
     switch(btn)
     {
-        /* Stop button */
-        case 0: 
+       case BtnNum::STOP : 
             if(is_playing)
             {
                 is_playing = false;
@@ -123,8 +123,7 @@ void update_state(uint8_t btn)
             }
             break;
             
-        /* Play button */    
-        case 1: 
+       case BtnNum::PLAY : 
             if(!is_playing)
             {
                 is_playing = true;
@@ -133,8 +132,7 @@ void update_state(uint8_t btn)
             }
             break;
             
-        /* Rec button */
-        case 2:
+       case BtnNum::REC :
             if(!rec_armed)
             {
                 rec_armed = true;
@@ -147,8 +145,7 @@ void update_state(uint8_t btn)
             }
             break;
             
-        /* Loop button */    
-        case 3:
+       case BtnNum::LOOP :
             if(!is_looping)
             {
                 is_looping = true;
