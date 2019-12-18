@@ -15,10 +15,10 @@
    Note: RECORDING and LOOPING can be active at the 
          same time as PLAYING and STOPPED
 */
-enum class PlayState
+enum class State
 {
+    STOPPED = 0,  
     PLAYING,
-    STOPPED,   
     RECORDING,
     LOOPING  
 };
@@ -65,6 +65,13 @@ DipSwitch dip_switch = DipSwitch(8, 9, 10, 11);
 
 uint8_t midi_channel = 0;
 
+bool is_playing = false;
+bool is_looping = false;
+bool rec_armed  = false;
+
+uint8_t curr_state = 0;
+uint8_t prev_state = 0;
+
 void setup() 
 {
     midi_channel = dip_switch.get_bin_state();
@@ -81,7 +88,10 @@ void setup()
 void loop() 
 {
     poll_buttons();
-    set_leds();
+    if(prev_state != curr_state)
+    {
+        set_leds();
+    }
 }
 
 void poll_buttons(void)
@@ -90,15 +100,92 @@ void poll_buttons(void)
     {
         if(digitalRead((uint8_t)button_pins[btn]) == HIGH)
         {
+            update_state(btn);
             send_cc((uint8_t)cc_numbers[btn], 127, midi_channel);
             delay(250);
         }
     }
 }
 
+void update_state(uint8_t btn)
+{
+    prev_state = curr_state;
+    
+    switch(btn)
+    {
+        /* Stop button */
+        case 0: 
+            if(is_playing)
+            {
+                is_playing = false;
+                clear_state(State::PLAYING);
+                set_state(State::STOPPED);
+            }
+            break;
+            
+        /* Play button */    
+        case 1: 
+            if(!is_playing)
+            {
+                is_playing = true;
+                set_state(State::PLAYING);
+                clear_state(State::STOPPED);
+            }
+            break;
+            
+        /* Rec button */
+        case 2:
+            if(!rec_armed)
+            {
+                rec_armed = true;
+                set_state(State::RECORDING);
+            }
+            else
+            {
+                rec_armed = false;
+                clear_state(State::RECORDING);            
+            }
+            break;
+            
+        /* Loop button */    
+        case 3:
+            if(!is_looping)
+            {
+                is_looping = true;
+                set_state(State::LOOPING);
+            }
+            else
+            {
+                is_looping = false;
+                clear_state(State::LOOPING);            
+            }
+            break; 
+    }
+}
+
+void set_state(State st)
+{
+    curr_state |= (0x01 << (uint8_t)st);
+}
+
+void clear_state(State st)
+{
+    curr_state &= ~(0x01 << (uint8_t)st);
+}
+
 void set_leds(void)
 {
-    
+    for(int led = 0; led < NUM_BUTT0NS; led++)
+    {
+        if(curr_state & (0x01 << led))
+        {
+            digitalWrite(led_pins[led], HIGH);
+        }
+        else
+        {
+            digitalWrite(led_pins[led], LOW);
+        }
+    }
 }
 
 void send_cc(uint8_t cc_num, uint8_t value, uint8_t channel)
@@ -107,5 +194,4 @@ void send_cc(uint8_t cc_num, uint8_t value, uint8_t channel)
     Serial.write(cc_num);
     Serial.write(value);    
 }
-
 
