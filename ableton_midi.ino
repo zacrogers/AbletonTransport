@@ -35,6 +35,10 @@ enum class BtnNum
     FFWD    
 };
 
+const BtnNum button_pins[] = {BtnNum::STOP, BtnNum::PLAY, BtnNum::REC, 
+                              BtnNum::LOOP, BtnNum::RWD, BtnNum::FFWD}; 
+
+
 /* Button cc message numbers  */
 enum class CCNum
 {
@@ -46,32 +50,23 @@ enum class CCNum
     FFWD            
 };
 
-const BtnNum button_pins[] = {BtnNum::STOP, 
-                              BtnNum::PLAY, 
-                              BtnNum::REC, 
-                              BtnNum::LOOP, 
-                              BtnNum::RWD, 
-                              BtnNum::FFWD}; 
-
-const CCNum cc_numbers[] = {CCNum::STOP, 
-                            CCNum::PLAY, 
-                            CCNum::REC, 
-                            CCNum::LOOP, 
-                            CCNum::RWD, 
-                            CCNum::FFWD}; 
+const CCNum cc_numbers[] = {CCNum::STOP, CCNum::PLAY, CCNum::REC, 
+                            CCNum::LOOP, CCNum::RWD,  CCNum::FFWD}; 
 
 uint8_t led_pins[NUM_BUTT0NS] = {A1, A0, A5, A4, A3, A2};
 
+/* Master midi channel */
 DipSwitch dip_switch = DipSwitch(8, 9, 10, 11);
-
 uint8_t midi_channel = 0;
 
+/* Led state booleans */
 bool is_playing = false;
 bool is_looping = false;
 bool rec_armed  = false;
 
 uint8_t curr_state = 0;
 uint8_t prev_state = 0;
+
 
 void setup() 
 {
@@ -85,6 +80,7 @@ void setup()
         pinMode(led_pins[i], OUTPUT);
     }
 }
+
 
 void loop() 
 {
@@ -107,6 +103,7 @@ void poll_buttons(void)
         }
     }
 }
+
 
 void update_state(BtnNum btn)
 {
@@ -160,15 +157,18 @@ void update_state(BtnNum btn)
     }
 }
 
+
 void set_state(State st)
 {
     curr_state |= (0x01 << (uint8_t)st);
 }
 
+
 void clear_state(State st)
 {
     curr_state &= ~(0x01 << (uint8_t)st);
 }
+
 
 void set_leds(void)
 {
@@ -184,6 +184,7 @@ void set_leds(void)
         }
     }
 }
+
 
 void send_cc(uint8_t cc_num, uint8_t value, uint8_t channel)
 {
