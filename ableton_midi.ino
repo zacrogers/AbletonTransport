@@ -1,5 +1,4 @@
 #include "dip_switch.h"
-#include "enums.h"
 
 /* MIDI command defines */
 #define NOTE_OFF      (uint16_t)0x80
