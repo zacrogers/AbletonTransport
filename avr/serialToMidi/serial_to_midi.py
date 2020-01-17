@@ -3,6 +3,9 @@ import serial.tools.list_ports as ser_port_list
 from midi import MidiConnector, Message
 import tkinter as tk
 
+CC_MESSAGE = 0xB0
+
+
 ''' Display serial ports of all connected devices '''
 class SerialToMidi(tk.Frame):
     def __init__(self, parent, *args, **kwargs):
@@ -50,12 +53,17 @@ class SerialToMidi(tk.Frame):
         self.midi_conn = MidiConnector(self.current_port, timeout = 1)
         
     def send_midi(self):
-        msg_type = self.current_port.read()
+        message = self.current_port.read()
         
+        msg_type = (msg_type & ~0x0F) 
+        midi_channel = (msg_type & ~0xF0) 
+              
         if(resp != 0):
             cc_num = self.current_port.read()
-            cc = ControlChange(cc_num, 127)
-            msg = Message(cc, channel = 0)       
+            msg_val = self.current_port.read()
+            
+            cc = ControlChange(cc_num, msg_val)
+            msg = Message(cc, channel = midi_channel)       
             self.midi_conn.write(msg)
                   
 
