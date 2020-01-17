@@ -55,10 +55,10 @@ class SerialToMidi(tk.Frame):
     def send_midi(self):
         message = self.current_port.read()
         
-        msg_type = (msg_type & ~0x0F) 
-        midi_channel = (msg_type & ~0xF0) 
+        msg_type = (message & ~0x0F) 
+        midi_channel = (message & ~0xF0) 
               
-        if(resp != 0):
+        if(msg_type == CC_MESSAGE):
             cc_num = self.current_port.read()
             msg_val = self.current_port.read()
             
@@ -66,6 +66,8 @@ class SerialToMidi(tk.Frame):
             msg = Message(cc, channel = midi_channel)       
             self.midi_conn.write(msg)
                   
+    #def send_cc(self):
+        
 
 if __name__ == "__main__":
     root = tk.Tk()
